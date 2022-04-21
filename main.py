@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from time import time, sleep
 from numpy.random import rand, random_sample
-from mpl_toolkits import mplot3d
+
 
 class PID():
     def __init__(self, kp, ki, kd, setpoint, period):
@@ -87,57 +87,64 @@ class PID():
     @staticmethod
     def mse_cost(data, setpoint):
         n = len(data)
-        return sum([(dt - setpoint)**2 for dt in data]) / n
+        return sum([(dt - setpoint) ** 2 for dt in data]) / n
 
-def pid_hybrid(pid1,pid2):
-    dice = rand()*3
+
+def pid_hybrid(pid1, pid2):
+    dice = rand() * 3
     if 0 <= dice < 1:
-        pid1_new = np.array([pid2[0],pid1[1],pid1[2]])
-        pid2_new = np.array([pid1[0],pid2[1],pid2[2]])
+        pid1_new = np.array([pid1[0], pid2[1], pid2[2]])
+        pid2_new = np.array([pid2[0], pid1[1], pid1[2]])
     elif 1 <= dice < 2:
-        pid1_new = np.array([pid1[0],pid2[1],pid1[2]])
-        pid2_new = np.array([pid2[0],pid1[1],pid2[2]])
+        pid1_new = np.array([pid2[0], pid1[1], pid2[2]])
+        pid2_new = np.array([pid1[0], pid2[1], pid1[2]])
     else:
-        pid1_new = np.array([pid1[0],pid1[1],pid2[2]])
-        pid2_new = np.array([pid2[0],pid2[1],pid1[2]])
+        pid1_new = np.array([pid2[0], pid2[1], pid1[2]])
+        pid2_new = np.array([pid1[0], pid1[1], pid2[2]])
     return pid1_new, pid2_new
 
-def pid_mutation():
-    return 100*random_sample(3)
 
-def elitism(K,Cost):
-    return K[Cost.index(min(Cost))]
+def pid_mutation():
+    return 100 * random_sample(3)
+
 
 if __name__ == "__main__":
     setpoint = 3.5
     period = 0.01
-    GenMax = 20
-    PopSize= 10
+    GenMax = 100
+    PopSize = 20
     cycle_num = 100
 
     # initialize PID controller
     pid_data = pd.DataFrame()
     for gen in range(GenMax):
         print('generation # ', gen)
-    # First generation
+        # First generation
         if gen == 0:
-            K = 100*random_sample((PopSize,3))
+            K = 100 * random_sample((PopSize, 3))
         Cost = []
+        pid_data_gen = pd.DataFrame()
         for i in range(PopSize):
             pid = PID(K[i][0], K[i][1], K[i][2], setpoint, period)
-            cost = pid.mae_cost(pid.simulation(cycle_num),setpoint)
+            cost = pid.mae_cost(pid.simulation(cycle_num), setpoint)
             Cost.append(cost)
-            print(K[i][0], K[i][1], K[i][2],cost)
-            pid_data = pid_data.append({'Kp': K[i][0], 'Ki': K[i][1], 'Kd': K[i][2], 'Cost': cost, 'Gen': gen},ignore_index=True)
-    # Genetic algorithm
+            print(K[i][0], K[i][1], K[i][2], cost)
+            pid_data_gen = pid_data_gen.append({'Kp': K[i][0], 'Ki': K[i][1], 'Kd': K[i][2], 'Cost': cost, 'Gen': gen},
+                                               ignore_index=True)
+        # Genetic algorithm
+        pid_data_gen = pid_data_gen.sort_values(by=['Cost'])
+        pid_data = pid_data.append(pid_data_gen)
+        # update K matrix
+        K[:, 0] = pid_data_gen['Kp'].tolist()
+        K[:, 1] = pid_data_gen['Ki'].tolist()
+        K[:, 2] = pid_data_gen['Kd'].tolist()
         K_prime = K
         # Elitism
-        K_prime[0] = elitism(K,Cost)
-        # hybrization
-        for j in [1,3,5,7]:
-            K_prime[j], K_prime[j+1] = pid_hybrid(K[j], K[j+1])
+        # hybrid
+        for j in [1, 3, 5, 7]:
+            K_prime[j], K_prime[j + 1] = pid_hybrid(K[j], K[j+1])
         # mutation
-        K_prime[PopSize-1] = pid_mutation()
+        K_prime[PopSize - 1] = pid_mutation()
         K = K_prime
 
 
@@ -148,10 +155,10 @@ if __name__ == "__main__":
     idata = pid_data['Ki'].tolist()
     ddata = pid_data['Kd'].tolist()
     gdata = pid_data['Gen'].tolist()
-    ax.scatter(pdata,idata,ddata,c = gdata, cmap = 'coolwarm')
-    ax.set_xlim(0,100)
-    ax.set_ylim(0,100)
-    ax.set_zlim(0,100)
+    ax.scatter(pdata, idata, ddata, color='b')
+    ax.set_xlim(0, 100)
+    ax.set_ylim(0, 100)
+    ax.set_zlim(0, 100)
     ax.set_xlabel('Kp')
     ax.set_ylabel('Ki')
     ax.set_zlabel('Kd')
