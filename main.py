@@ -4,10 +4,11 @@ import pandas as pd
 from time import time, sleep
 from numpy.random import rand, random_sample
 
+ENVIONMENT_TEMP = 43
 
 class PID():
     def __init__(self, kp, ki, kd, setpoint, period):
-        self.temp = 0
+        self.temp = ENVIONMENT_TEMP
         self.kp = kp
         self.ki = ki
         self.kd = kd
@@ -57,27 +58,29 @@ class PID():
     def output(self, temp):
         error = self.get_setpoint() - temp
         integral = self.get_integral() + error
-        derivative = (error - self.get_last_error()) / self.get_period()
+        derivative = (error - self.get_last_error()) / self.get_period()/1e3
         kp, ki, kd = self.get_pid()
         self.set_integral(integral)
         self.set_last_error(error)
         return kp * error + ki * integral + kd * derivative
 
     def simulation(self, cycle_num):
+        output_logger = []
         temp_logger = []
         self.set_curr_cycle(1)
         while cycle_num + 1 > self.get_curr_cycle():
             temp_curr = self.get_temp()
             temp_logger.append(temp_curr)
             output = self.output(temp_curr)
+            output_logger.append(output)
             if output > 0:
-                self.set_temp(temp_curr + 0.5)
+                self.set_temp(temp_curr + 0.32)
             else:
-                self.set_temp(temp_curr - 0.1)
+                self.set_temp(temp_curr - 0.01)
             # print(self.get_curr_cycle(), self.get_temp())
             sleep(self.get_period())
             self.set_curr_cycle(self.get_curr_cycle() + 1)
-        return temp_logger
+        return temp_logger,output_logger
 
     @staticmethod
     def mae_cost(data, setpoint):
@@ -109,11 +112,11 @@ def pid_mutation():
 
 
 if __name__ == "__main__":
-    setpoint = 3.5
-    period = 0.01
-    GenMax = 100
+    setpoint = 56
+    period = 0.001
+    GenMax = 60
     PopSize = 20
-    cycle_num = 100
+    cycle_num = 1000
 
     # initialize PID controller
     pid_data = pd.DataFrame()
