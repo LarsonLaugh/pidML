@@ -73,15 +73,15 @@ In a PID controller, the temperature changes according to the results of physica
 To evaluate each PID, we need to define a cost function L_mae= sum(abs(set temp - measured temp)) or L_mse=sum((set temp - measured temp)^2). At each generation, 
 we choose the PID with the smallest cost function to be passed onto the next generation (Elitism) 
 and the one with the largest cost function to mutate (mutation, randomize Kp, Ki, Kd),
-the rest hybridize with neighboring to produce the next genertation (hybrid).
+the rest hybridize with neighboring to produce the next generation (hybrid).
 
 <img alt="idea0" height="400" src="GAlgo.JPG" width="500"/>
 
-In the 99th generation, we find the winners' descendents start to collapse at a smaller region
+In the 99th generation, we find the winners' descendants start to collapse at a smaller region
 in (Kp, Ki, Kd) space. This is a direct consequence of data(model) training.
 
-<img alt="scatters02" height="300" src="scatters02.PNG" width="300"/>
-<img alt="scatters02" height="300" src="scatters.PNG" width="300"/>
+<img alt="scatters02" height="300" src="scatters02.png" width="300"/>
+<img alt="scatters" height="300" src="scatters.png" width="300"/>
 
 ## Practical experiments and its comparison with our prediction by modelling.
 A set of PID parameter (Kp = 88, Ki = 4.4, Kd = 18) wins in the genetic algorithm modeling (100 generations and 
@@ -95,6 +95,6 @@ than simulation. This is not overshooting, but may be due to the fact that the h
 water and continues to heat water even after powered off. This may be the bottleneck to achieve better performance.
 I will try to improve this from both hardware and software approach. To be continued ...
 
-<img alt="realvssimu" height="500" src="realvssimu.PNG" width="500"/>
+<img alt="realvssimu" height="500" src="realvssimu.png" width="500"/>
 
  
