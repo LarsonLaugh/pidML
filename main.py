@@ -6,6 +6,7 @@ from numpy.random import rand, random_sample
 
 ENVIONMENT_TEMP = 43
 
+
 class PID():
     def __init__(self, kp, ki, kd, setpoint, period):
         self.temp = ENVIONMENT_TEMP
@@ -58,7 +59,7 @@ class PID():
     def output(self, temp):
         error = self.get_setpoint() - temp
         integral = self.get_integral() + error
-        derivative = (error - self.get_last_error()) / self.get_period()/1e3
+        derivative = (error - self.get_last_error()) / self.get_period() / 1e3
         kp, ki, kd = self.get_pid()
         self.set_integral(integral)
         self.set_last_error(error)
@@ -74,23 +75,23 @@ class PID():
             output = self.output(temp_curr)
             output_logger.append(output)
             if output > 0:
-                self.set_temp(temp_curr + 0.32)
+                self.set_temp(temp_curr + 0.3)
             else:
                 self.set_temp(temp_curr - 0.01)
             # print(self.get_curr_cycle(), self.get_temp())
             sleep(self.get_period())
             self.set_curr_cycle(self.get_curr_cycle() + 1)
-        return temp_logger,output_logger
+        return temp_logger, output_logger
 
     @staticmethod
     def mae_cost(data, setpoint):
         n = len(data)
-        return sum([abs(dt - setpoint) for dt in data]) / n
+        return sum([abs(dt - setpoint) for dt in data[0]]) / n
 
     @staticmethod
     def mse_cost(data, setpoint):
         n = len(data)
-        return sum([(dt - setpoint) ** 2 for dt in data]) / n
+        return sum([(dt - setpoint) ** 2 for dt in data[0]]) / n
 
 
 def pid_hybrid(pid1, pid2):
@@ -112,10 +113,10 @@ def pid_mutation():
 
 
 if __name__ == "__main__":
-    setpoint = 56
+    setpoint = 65
     period = 0.001
-    GenMax = 60
-    PopSize = 20
+    GenMax = 20
+    PopSize = 10
     cycle_num = 1000
 
     # initialize PID controller
@@ -145,11 +146,10 @@ if __name__ == "__main__":
         # Elitism
         # hybrid
         for j in [1, 3, 5, 7]:
-            K_prime[j], K_prime[j + 1] = pid_hybrid(K[j], K[j+1])
+            K_prime[j], K_prime[j + 1] = pid_hybrid(K[j], K[j + 1])
         # mutation
         K_prime[PopSize - 1] = pid_mutation()
         K = K_prime
-
 
     # plot
     fig = plt.figure()
