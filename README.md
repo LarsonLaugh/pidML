@@ -20,7 +20,7 @@ else:
 ```
 Straightforward, but won't work...
 
-<img alt="idea0" height="250" src="idea0.JPG" width="400"/>
+<img alt="idea0" height="250" src="vault/idea0.JPG" width="400"/>
 
 
 Idea1:
@@ -37,7 +37,7 @@ else:
 ```
 The PID system instead of temperature will indicate the ON/OFF status of the heater. However, we need to manually set the PID parameters Kp, Ki, Kd. Not cool. 
 
-<img alt="idea0" height="250" src="idea1.JPG" width="400"/>
+<img alt="idea0" height="250" src="vault/idea1.JPG" width="400"/>
 
 Idea2:
 ```
@@ -60,7 +60,7 @@ According to Fourier's law: **heater transfer**/meter^2/sec = - **thermal conduc
 power is thus 37.8 W. The thermal conductivity of air is about [**27 mW/m K**](https://www.engineeringtoolbox.com/air-properties-viscosity-conductivity-heat-capacity-d_1509.html). The power of the heater is 1000 W according to manufacturer. Here is my sketch to illustrate the idea
 and some necessary math:
 
-<img alt="phymodeling" height="450" src="physmodeling.JPG" width="700"/>
+<img alt="phymodeling" height="450" src="vault/physmodeling.JPG" width="700"/>
 
 By knowing the heat capacity of water is [**4.184 Joule/gram/deg**](https://www.engineeringtoolbox.com/specific-heat-capacity-water-d_660.html) and 0.8L (800 gram) water inside, we can calculate
 the temperature goes up at a rate of **0.3 deg/sec** when the heater is on, and decreases at a rate of 
@@ -75,13 +75,13 @@ we choose the PID with the smallest cost function to be passed onto the next gen
 and the one with the largest cost function to mutate (mutation, randomize Kp, Ki, Kd),
 the rest hybridize with neighboring to produce the next generation (hybrid).
 
-<img alt="idea0" height="400" src="GAlgo.JPG" width="500"/>
+<img alt="idea0" height="400" src="vault/GAlgo.JPG" width="500"/>
 
 In the 99th generation, we find the winners' descendants start to collapse at a smaller region
 in (Kp, Ki, Kd) space. This is a direct consequence of data(model) training.
 
-<img alt="scatters02" height="300" src="scatters02.png" width="300"/>
-<img alt="scatters" height="300" src="scatters.png" width="300"/>
+<img alt="scatters02" height="300" src="vault/scatters02.png" width="300"/>
+<img alt="scatters" height="300" src="vault/scatters.png" width="300"/>
 
 ## Practical experiments and its comparison with our prediction by modelling.
 A set of PID parameter (Kp = 88, Ki = 4.4, Kd = 18) wins in the genetic algorithm modeling (100 generations and 
@@ -95,6 +95,6 @@ than simulation. This is not overshooting, but may be due to the fact that the h
 water and continues to heat water even after powered off. This may be the bottleneck to achieve better performance.
 I will try to improve this from both hardware and software approach. To be continued ...
 
-<img alt="realvssimu" height="500" src="realvssimu.png" width="500"/>
+<img alt="realvssimu" height="500" src="vault/realvssimu.png" width="500"/>
 
  
