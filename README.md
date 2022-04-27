@@ -10,7 +10,19 @@ In "pidML", "pid" stands for a PID temperature controller. This temperature cont
 | Temperature sensor | MAX6675            |
 | 220V control       | Relay              |
 | User interface     | ICD 1602           |
+|User input|rotary potentiometer|
  
+## Implementation
+git clone this repo, and use pidtrain.py to train PID parameters, then input them into the micropython codes under 
+```mpython/main.py```. Copy this file and its library ```lib``` onto your microprocessor (Pi Pico, Arduino or ESP32).
+Wire hardware as below:
+
+
+<img alt="idea0" height="600" src="vault/install.JPG" width="450"/>
+
+
+
+
 ## Develop upon the simplest idea
 Idea0: 
 ```python

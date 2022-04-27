@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from main import PID
+from pidtrain import PID
 
 
 plt.rc('lines', lw=1, color='k')  # thicker black lines
