@@ -118,11 +118,14 @@ def genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, is_mae=True):
     pid_data = pd.DataFrame()
     for gen in range(GenMax):
         print('generation # ', gen)
+        print('--------------')
+        print('Kp, Ki, Kd, Cost')
         # First generation
         if gen == 0:
             K = 100 * random_sample((PopSize, 3))
         Cost = []
         pid_data_gen = pd.DataFrame()
+        # run simulation for each
         for i in range(PopSize):
             pid = PID(K[i][0], K[i][1], K[i][2], setpoint, period)
             cost = pid.mae_cost(pid.simulation(cycle_num)[0], setpoint) if is_mae else pid.mse_cost(
@@ -142,10 +145,13 @@ def genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, is_mae=True):
         # Elitism
         K_prime = K
         # hybrid
-        for j in [1, 3, 5, 7]:
+        for j in np.linspace(1, PopSize - 3, 1, dtype='int'):
             K_prime[j], K_prime[j + 1] = pid_hybrid(K[j], K[j + 1])
-        # mutation
-        K_prime[PopSize - 1] = pid_mutation()
+        if PopSize % 2:
+            K_prime[PopSize - 1] = pid_mutation()  # the last to mutate
+        else:
+            K_prime[PopSize - 2] = pid_mutation()  # the last two to mutate
+            K_prime[PopSize - 1] = pid_mutation()
         K = K_prime
         pid_data.to_csv("simu_setpt_" + str(setpoint) + "_genmax_" + str(GenMax) + "_popsz_" + str(PopSize))
     return pid_data
@@ -155,7 +161,7 @@ if __name__ == "__main__":
     setpoint = 65
     period = 0.001
     GenMax = 100
-    PopSize = 20
+    PopSize = 19
     cycle_num = 1000
 
     pid_data = genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, True)
