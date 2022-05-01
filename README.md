@@ -18,7 +18,7 @@ git clone this repo, and use pidtrain.py to train PID parameters, then input the
 Wire hardware as below:
 
 
-<img alt="idea0" height="600" src="vault/install.JPG" width="450"/>
+<img alt="idea0" height="450" src="vault/install.JPG" width="450"/>
 
 
 
@@ -87,6 +87,26 @@ To evaluate each PID, we need to define a cost function L_mae= sum(abs(set temp 
 we choose the PID with the smallest cost function to be passed onto the next generation (Elitism) 
 and the one with the largest cost function to mutate (mutation, randomize Kp, Ki, Kd),
 the rest hybridize with neighboring to produce the next generation (hybrid).
+The implementation in codes is as belows:
+```python
+def pid_hybrid(pid1, pid2):
+    dice = rand() * 3
+    if 0 <= dice < 1:
+        pid1_new = np.array([pid1[0], pid2[1], pid2[2]])
+        pid2_new = np.array([pid2[0], pid1[1], pid1[2]])
+    elif 1 <= dice < 2:
+        pid1_new = np.array([pid2[0], pid1[1], pid2[2]])
+        pid2_new = np.array([pid1[0], pid2[1], pid1[2]])
+    else:
+        pid1_new = np.array([pid2[0], pid2[1], pid1[2]])
+        pid2_new = np.array([pid1[0], pid1[1], pid2[2]])
+    return pid1_new, pid2_new
+
+def pid_mutation():
+    return 100 * random_sample(3)
+
+```
+
 
 <img alt="idea0" height="400" src="vault/GAlgo.JPG" width="500"/>
 

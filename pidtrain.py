@@ -4,6 +4,7 @@ import pandas as pd
 from time import time, sleep
 from numpy.random import rand, random_sample
 
+# constants
 ENVIONMENT_TEMP = 43
 
 
@@ -86,12 +87,12 @@ class PID():
     @staticmethod
     def mae_cost(data, setpoint):
         n = len(data)
-        return sum([abs(dt - setpoint) for dt in data[0]]) / n
+        return sum([abs(dt - setpoint) for dt in data]) / n
 
     @staticmethod
     def mse_cost(data, setpoint):
         n = len(data)
-        return sum([(dt - setpoint) ** 2 for dt in data[0]]) / n
+        return sum([(dt - setpoint) ** 2 for dt in data]) / n
 
 
 def pid_hybrid(pid1, pid2):
@@ -112,14 +113,8 @@ def pid_mutation():
     return 100 * random_sample(3)
 
 
-if __name__ == "__main__":
-    setpoint = 65
-    period = 0.001
-    GenMax = 20
-    PopSize = 10
-    cycle_num = 1000
-
-    # initialize PID controller
+# Genetic Algorithm Simulation
+def genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, is_mae=True):
     pid_data = pd.DataFrame()
     for gen in range(GenMax):
         print('generation # ', gen)
@@ -130,11 +125,13 @@ if __name__ == "__main__":
         pid_data_gen = pd.DataFrame()
         for i in range(PopSize):
             pid = PID(K[i][0], K[i][1], K[i][2], setpoint, period)
-            cost = pid.mae_cost(pid.simulation(cycle_num), setpoint)
+            cost = pid.mae_cost(pid.simulation(cycle_num)[0], setpoint) if is_mae else pid.mse_cost(
+                pid.simulation(cycle_num)[0], setpoint)
             Cost.append(cost)
             print(K[i][0], K[i][1], K[i][2], cost)
-            pid_data_gen = pid_data_gen.append({'Kp': K[i][0], 'Ki': K[i][1], 'Kd': K[i][2], 'Cost': cost, 'Gen': gen},
-                                               ignore_index=True)
+            pid_data_gen = pid_data_gen.append(
+                {'Kp': K[i][0], 'Ki': K[i][1], 'Kd': K[i][2], 'Cost': cost, 'Gen': int(gen)},
+                ignore_index=True)
         # Genetic algorithm
         pid_data_gen = pid_data_gen.sort_values(by=['Cost'])
         pid_data = pid_data.append(pid_data_gen)
@@ -142,14 +139,26 @@ if __name__ == "__main__":
         K[:, 0] = pid_data_gen['Kp'].tolist()
         K[:, 1] = pid_data_gen['Ki'].tolist()
         K[:, 2] = pid_data_gen['Kd'].tolist()
-        K_prime = K
         # Elitism
+        K_prime = K
         # hybrid
         for j in [1, 3, 5, 7]:
             K_prime[j], K_prime[j + 1] = pid_hybrid(K[j], K[j + 1])
         # mutation
         K_prime[PopSize - 1] = pid_mutation()
         K = K_prime
+        pid_data.to_csv("simu_setpt_" + str(setpoint) + "_genmax_" + str(GenMax) + "_popsz_" + str(PopSize))
+    return pid_data
+
+
+if __name__ == "__main__":
+    setpoint = 65
+    period = 0.001
+    GenMax = 100
+    PopSize = 20
+    cycle_num = 1000
+
+    pid_data = genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, True)
 
     # plot
     fig = plt.figure()
@@ -166,4 +175,3 @@ if __name__ == "__main__":
     ax.set_ylabel('Ki')
     ax.set_zlabel('Kd')
     plt.show()
-    pid_data.to_csv("GeneticAlgorithm")
