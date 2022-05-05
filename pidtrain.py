@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import timeit
 from time import time, sleep
 from numpy.random import rand, random_sample
 
@@ -60,7 +61,7 @@ class PID():
     def output(self, temp):
         error = self.setpoint - temp
         integral = self.integral + error
-        derivative = (error - self.last_error) / self.period / 1e3
+        derivative = (error - self.last_error) / self.period
         self.set_integral(integral)
         self.set_last_error(error)
         return self.kp * error + self.ki * integral + self.kd * derivative
@@ -79,7 +80,7 @@ class PID():
             else:
                 self.set_temp(temp_curr - 0.01)
             # print(self.get_curr_cycle(), self.get_temp())
-            sleep(self.period)
+            # sleep(self.period)
             self.set_curr_cycle(self.curr_cycle + 1)
         return temp_logger, output_logger
 
@@ -157,26 +158,28 @@ def genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, is_mae=True):
 
 
 if __name__ == "__main__":
+    start = timeit.default_timer()
     setpoint = 65
-    period = 0.001
+    period = 1
     GenMax = 100
     PopSize = 20
     cycle_num = 1000
 
     pid_data = genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, True)
-
+    stop = timeit.default_timer()
+    print('Time:' , stop-start)
     # plot
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-    pdata = pid_data['Kp'].tolist()
-    idata = pid_data['Ki'].tolist()
-    ddata = pid_data['Kd'].tolist()
-    gdata = pid_data['Gen'].tolist()
-    ax.scatter(pdata, idata, ddata, color='b')
-    ax.set_xlim(0, 100)
-    ax.set_ylim(0, 100)
-    ax.set_zlim(0, 100)
-    ax.set_xlabel('Kp')
-    ax.set_ylabel('Ki')
-    ax.set_zlabel('Kd')
-    plt.show()
+    # fig = plt.figure()
+    # ax = fig.add_subplot(projection='3d')
+    # pdata = pid_data['Kp'].tolist()
+    # idata = pid_data['Ki'].tolist()
+    # ddata = pid_data['Kd'].tolist()
+    # gdata = pid_data['Gen'].tolist()
+    # ax.scatter(pdata, idata, ddata, color='b')
+    # ax.set_xlim(0, 100)
+    # ax.set_ylim(0, 100)
+    # ax.set_zlim(0, 100)
+    # ax.set_xlabel('Kp')
+    # ax.set_ylabel('Ki')
+    # ax.set_zlabel('Kd')
+    # plt.show()
