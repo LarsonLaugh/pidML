@@ -15,14 +15,12 @@
 using namespace std;
 
 
-
-
-struct pidcoef
+struct pidcoef // PID coefficients
 {
 	float Kp;
 	float Ki;
 	float Kd;
-	float cost = 0.0;
+	float cost = 0.0; // cost function value
 };
 
 class PID
@@ -55,7 +53,7 @@ public:
 	void set_temp(float t) { temp = t; }
 	void set_last_error(float le) { last_error = le; }
 
-	float output()
+	float output() // calculate output for one PID cycle
 	{
 		float error = 0.0;
 		float derivative = 0.0;
@@ -67,7 +65,7 @@ public:
 
 		return Kpid.Kp * error + Kpid.Ki * integral + Kpid.Kd * derivative;
 	}
-	float simulation(vector<float>* temp_logger, int cycle_num)
+	float simulation(vector<float>* temp_logger, int cycle_num) // simulate for cycle_num PID cycles
 	{
 		set_curr_cycle(1);
 		int n = 1;
@@ -91,7 +89,7 @@ public:
 
 };
 
-void swap(float& a, float& b)
+void swap(float& a, float& b) // swap the values of a and b
 {
 	float temp;
 	temp = a;
@@ -99,7 +97,7 @@ void swap(float& a, float& b)
 	b = temp;
 }
 
-void pid_hybrid(pidcoef& Kpid1, pidcoef& Kpid2)
+void pid_hybrid(pidcoef& Kpid1, pidcoef& Kpid2) // hybrid two PID parameters and initialize
 {
 	int dice = (rand() % 3);
 	switch (dice)
@@ -133,7 +131,7 @@ void pid_hybrid(pidcoef& Kpid1, pidcoef& Kpid2)
 }
 
 
-pidcoef pid_mutation()
+pidcoef pid_mutation() // generate random PID coefficients to realize mutation
 {
 	random_device rd; // obtain a random number from hardware
 	mt19937 gen(rd()); // seed the generator
@@ -146,7 +144,7 @@ pidcoef pid_mutation()
 	return Kpid;
 }
 
-void fill_random(vector<pidcoef>* vtr, int size)
+void fill_random(vector<pidcoef>* vtr, int size) // fill a vector data with random float numbers
 {
 	random_device rd;
 	mt19937 gen(rd());
@@ -162,13 +160,13 @@ void fill_random(vector<pidcoef>* vtr, int size)
 	};
 };
 
-bool cost_sorter(pidcoef const& Kpid1, pidcoef const& Kpid2)
+bool cost_sorter(pidcoef const& Kpid1, pidcoef const& Kpid2) // sort by cost function value
 {
 	return Kpid1.cost < Kpid2.cost;
 }
 
 
-void genalg_simu(int GenMax, int PopSize, float setpoint, float period, int cycle_num)
+void genalg_simu(int GenMax, int PopSize, float setpoint, float period, int cycle_num) // For simulation
 {
 	vector<pidcoef> Kpid_vtr;
 	fill_random(&Kpid_vtr, PopSize);
@@ -184,6 +182,8 @@ void genalg_simu(int GenMax, int PopSize, float setpoint, float period, int cycl
 			PID pid(Kpid_vtr[i].Kp, Kpid_vtr[i].Ki, Kpid_vtr[i].Kd, setpoint, period);
 			vector<float> temp_logger;
 			Kpid_vtr[i].cost = pid.simulation(&temp_logger, cycle_num);
+
+
 			cout << Kpid_vtr[i].Kp << ' ' << Kpid_vtr[i].Ki << ' ' << Kpid_vtr[i].Kd
 				<< ' ' << Kpid_vtr[i].cost << '\n';
 		};
@@ -214,7 +214,6 @@ int main()
 	genalg_simu(GenMax, PopSize, setpoint, period, cycle_num);
 	auto t2 = std::chrono::high_resolution_clock::now();
 	auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
-	std::cout << ms_int.count() << "ms\n";
-	ofstream outfile;
+	std::cout << ms_int.count() << "ms\n"; // display runtime
 	return 0;
 }
