@@ -6,7 +6,7 @@ from time import time, sleep
 from numpy.random import rand, random_sample
 
 # constants
-ENVIONMENT_TEMP = 25
+ENVIONMENT_TEMP = 43
 
 
 class PID():
@@ -61,7 +61,7 @@ class PID():
     def output(self, temp):
         error = self.setpoint - temp
         integral = self.integral + error
-        derivative = (error - self.last_error) / self.period
+        derivative = (error - self.last_error) / self.period/1e3
         self.set_integral(integral)
         self.set_last_error(error)
         return self.kp * error + self.ki * integral + self.kd * derivative
@@ -164,6 +164,7 @@ if __name__ == "__main__":
     period = 1
     GenMax = 100
     PopSize = 20
+    period = 0.001
     cycle_num = 1000
     for setpoint in np.linspace(40, 90, 11, dtype='int'):
         _, best = genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, True)

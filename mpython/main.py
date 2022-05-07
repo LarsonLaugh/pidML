@@ -1,7 +1,7 @@
 from machine import I2C, Pin
 from time import time, localtime
-from lcd1602_i2c import I2cLcd
-from max6675 import MAX6675
+from lib.lcd1602_i2c import I2cLcd
+from lib.max6675 import MAX6675
 
 # Define pins and address
 DEFAULT_I2C_ADDR = 0x27
@@ -111,12 +111,9 @@ def datalog(f, data):
     f.write('\n')
 
 
-#     print(localtime()[3],localtime()[4],localtime()[5])
-
-
 # PID parameters
 Kp, Ki, Kd = 88, 0, 18
-Kp_default, Ki_default, Kd_default = 50, 50, 50
+Kp_default, Ki_default, Kd_default = 80, 1, 50
 # predefine
 set_temp, read_temp = 30, 0
 time_interval = 1  # in unit of second
@@ -126,11 +123,12 @@ datalog_flag = 0
 # UI setting
 screen_id = 0 # default main screen 0
 num_of_screen = 6
-# create a datalog file
+# create a datalog.txt file and write the header
 f = open("datalog.txt", "a")
 f.write("Data Logger \n")
 f.write("Time, TempRead, TempSet, Kp, Ki, Kd, error, integral, derivate, output\n")
 f.close()
+
 pid_tune_precision = 1
 # loop
 while True:

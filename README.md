@@ -1,28 +1,62 @@
-# pidML - Genetic-algorithm-trained PID controller
+# pidML -  PID controller (Genetic-algorithm-trained)
 
 
 In "pidML", "pid" stands for a PID temperature controller. This temperature controller is to help me repurpose my old electric kettle into a "mini" Sous vide cooker. This kettle has a small volume of 1 liter, easy to reach stable and uniform temperature even without external water cycle, which is necessary in a much larger, commercial cooker. On the other hand, "ML" stands for machine learning, which I tried to implement genetic algorithm to help training PID parameters.
 
-## List of components
-| Functional parts   | Models             |
-|--------------------|--------------------|
-| Microprocessor     | Raspberry Pi Pico  |
-| Temperature sensor | MAX6675            |
-| 220V control       | Relay              |
-| User interface     | ICD 1602           |
-|User input|rotary potentiometer|
+# For users
+
+## How to use
+Clone this repository to your `directory_to_project`
+```shell
+git clone git@github.com:LarsonLaugh/pidML.git
+```
+For python users, use `pidtrain.py` to train your PID controller in simulation. The `Micropython`
+code for your MCU is stored in `mpython` folder. Please include the libraries in `lib` as well.
+
+For C++ users, use `pidtrain.cpp` to train your PID controller instead (My test is .cpp code is 50 times 
+faster). The Arduino code for your MCU is stored in `Arduino` folder and please include the `libraries`
+folder.
+
+## List of hardware components and wiring
+| Functional parts   | Models                          |
+|--------------------|---------------------------------|
+| Microprocessor     | Raspberry Pi Pico/ Ardurio Nano |
+| Temperature sensor | MAX6675                         |
+| 220V control       | Relay                           |
+| User interface     | ICD 1602                        |
+|User input| rotary potentiometer            |
  
-## Implementation
-git clone this repo, and use pidtrain.py to train PID parameters, then input them into the micropython codes under 
-```mpython/main.py```. Copy this file and its library ```lib``` onto your microprocessor (Pi Pico, Arduino or ESP32).
-Wire hardware as below:
 
+<img alt="idea0" height="350" src="vault/sketch_ArduinoNano.png" width="450"/>
 
-<img alt="idea0" height="450" src="vault/install.JPG" width="450"/>
+## Intro to user interface via LCD 1602
+The LCD is only 16 by 2, so we have to fully exploit the limited screen space and the switch button of the 
+rotary potentiometer.
 
+<img alt="screen0" height="100" src="vault/ui_screen0.jpg" width="280"/>
 
+This is the main screen to display setting temperature and reading. Press button to go next.
 
+<img alt="screen1" height="100" src="vault/ui_screen1.jpg" width="280"/>
 
+This is the second screen (`screen1`) to monitor the PID paramters in use and the calculated output value 
+in real time. Press button to go next and roll to the left to go back to `screen0`.
+
+<img alt="screen2" height="100" src="vault/ui_screen2.jpg" width="280"/>
+
+<img alt="screen3" height="100" src="vault/ui_screen3.jpg" width="280"/>
+
+<img alt="screen4" height="100" src="vault/ui_screen4.jpg" width="280"/>
+
+Above three screens (`screen2` to `screen4`) to modify the PID parameters one by one manually. Use the 
+rotary potentiometer. Press button to go next.
+
+<img alt="screen5" height="100" src="vault/ui_screen5.jpg" width="280"/>
+
+This is the last screen `screen5`. Roll left to adapt `Auto mode` (default setting) and press button to
+accept the manually set PID paramters and go to `screen0`.
+
+# For developers
 ## Develop upon the simplest idea
 Idea0: 
 ```python

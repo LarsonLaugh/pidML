@@ -25,8 +25,8 @@ def plot_compr():
     ax = fig.add_subplot(211)
     ax1 = fig.add_subplot(212)
     Time = np.linspace(0, 5 * len(data), len(data), dtype="int")
-    ax.plot(Time, data['temp'], color='b', label='Real')
-    ax1.plot(Time, data['output'], color='g', label='Real')
+    ax.scatter(Time, data['temp'], color='b', label='Real',s=10)
+    ax1.scatter(Time, data['output'], color='b', label='Real',s=10)
 
     setpoint = 56
     period = 0.001
@@ -37,7 +37,7 @@ def plot_compr():
     simu_temp, simu_output = pid.simulation(cycle_num)
     simu_time = np.linspace(0, cycle_num - 1, cycle_num, dtype="int")
     ax.plot(simu_time, simu_temp, color='r', label='Simulation')
-    ax1.plot(simu_time, simu_output, color='k', label='Simulation')
+    ax1.plot(simu_time, simu_output, color='r', label='Simulation')
     ax1.set_ylim(-2e4, 1e3)
     ax.set_ylabel('Temp (K)')
     ax.set_xlabel('Time (sec)')
@@ -46,6 +46,8 @@ def plot_compr():
     ax.axhline(y=56, linewidth=2, linestyle='--')
     ax.legend(loc='best')
     ax1.legend(loc='best')
+    # ax.set_xlim(1750,2000)
+    # ax.set_ylim(50,60)
     ax.set_title("Real vs Simulation")
     plt.savefig('realvssimu')
 
@@ -85,4 +87,4 @@ def plot_gen(num1, num2, num3):
     plt.show()
 
 
-plot_gen(0, 50, 99)
+plot_compr()

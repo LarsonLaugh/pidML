@@ -1,15 +1,16 @@
+/*
+    Name:       pidC.ino
+    Created:  5/6/2022 8:36:44 AM
+    Author:     LaoWang
+*/
+
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 #include <AverageThermocouple.h>
 #include <MAX6675_Thermocouple.h>
 #include <SmoothThermocouple.h>
 #include <Thermocouple.h>
 
-/*
-    Name:       pidC.ino
-    Created:  5/6/2022 8:36:44 AM
-    Author:     LX
-*/
-#include <Wire.h> 
-#include <LiquidCrystal_I2C.h>
 # define DEFAULT_I2C_ADDR 0x27
 
 # define SW 8
@@ -28,7 +29,7 @@
 LiquidCrystal_I2C lcd(DEFAULT_I2C_ADDR, 16, 2);
 MAX6675_Thermocouple thermocouple(SCK,CS,SO);
 
-int rot_add()
+int rot_add() // detect LEFT (-1) or RIGHT (+1) rotation
 {
   int add = 0;
   bool flag_01 = false;
@@ -54,7 +55,7 @@ int rot_add()
    return add;
 }
     
-void show_temp(LiquidCrystal_I2C lcd, float value, bool is_set_temp)
+void show_temp(LiquidCrystal_I2C lcd, float value, bool is_set_temp) // screen 0
 {
   if (is_set_temp)
   {
@@ -76,7 +77,7 @@ void show_temp(LiquidCrystal_I2C lcd, float value, bool is_set_temp)
   }
 }
 
-void showPID(LiquidCrystal_I2C lcd, int Kp, int Ki, int Kd, float output)
+void showPID(LiquidCrystal_I2C lcd, int Kp, int Ki, int Kd, float output) // screen 1
 {
     lcd.setCursor(0,0);
     lcd.print("P:");
@@ -95,7 +96,7 @@ void showPID(LiquidCrystal_I2C lcd, int Kp, int Ki, int Kd, float output)
     lcd.print(output); 
 }
 
-void changePID(LiquidCrystal_I2C lcd, int Kp, int Ki, int Kd, int id_of_pid)
+void changePID(LiquidCrystal_I2C lcd, int Kp, int Ki, int Kd, int id_of_pid) // screen 2, 3, 4
 {
     lcd.setCursor(0,0);
     lcd.print("P:");
@@ -118,7 +119,7 @@ void changePID(LiquidCrystal_I2C lcd, int Kp, int Ki, int Kd, int id_of_pid)
 }
 
 
-void mode_switch_dial(LiquidCrystal_I2C lcd)
+void mode_switch_dial(LiquidCrystal_I2C lcd) // screen 5
 {
     lcd.setCursor(0,0);
     lcd.print("AutoPID-> Left");
@@ -126,6 +127,7 @@ void mode_switch_dial(LiquidCrystal_I2C lcd)
     lcd.print("ManPID-> Press");
 }
 
+// global variables
 int Kp = 88;
 int Ki = 0;
 int Kd = 18;
@@ -160,6 +162,7 @@ void setup()
 // Add the main program code into the continuous loop() function
 void loop()
 {
+    // user interface (UI)
     if (digitalRead(SW)==0 || screen_id>=num_of_screen)
     {
       if (screen_id<num_of_screen)
@@ -218,16 +221,18 @@ void loop()
         mode_switch_dial(lcd);
         if (rot_add() == -1)
         {
-          Kp = 50;
-          Ki = 50;
+          Kp = 80;
+          Ki = 1;
           Kd = 50;
           screen_id = 0;
         }
         break;
       } 
     }
-  set_temp += rot_add();
+  set_temp += rot_add(); // set temperature
   read_temp = thermocouple.readCelsius();
+
+  // PID control
   err = set_temp - read_temp;
   inte += err;
   deri = (err-lasterr);
