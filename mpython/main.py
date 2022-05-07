@@ -62,7 +62,7 @@ def show_temp(lcd, value, is_set_temp):  # screen 0
         lcd.putstr("MES TEMP:")
         lcd.move_to(9, 1)
     lcd.putstr(' ' + "{:.2f}".format(value) + 'C')
-    return value
+
 
 
 def show_PID(lcd, Kp, Ki, Kd, output):  # screen 1
@@ -122,7 +122,6 @@ set_temp, read_temp = 30, 0
 time_interval = 1  # in unit of second
 last_update = time()
 err, inte, deri, output, lasterr = 0, 0, 0, 0, 0  # initialize PID parameters
-toggle_pid = False  # toggle display
 datalog_flag = 0
 # UI setting
 screen_id = 0 # default main screen 0
@@ -170,8 +169,6 @@ while True:
         if rot_add(CLK, DT) == -1:  # left turn to use Auto mode
             Kp, Ki, Kd = Kp_default, Ki_default, Kd_default
             screen_id = 0
-    print(Kp)
-    print('\n*')
     # set temperature
     set_temp += rot_add(CLK, DT)
 

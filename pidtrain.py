@@ -6,7 +6,7 @@ from time import time, sleep
 from numpy.random import rand, random_sample
 
 # constants
-ENVIONMENT_TEMP = 43
+ENVIONMENT_TEMP = 25
 
 
 class PID():
@@ -117,9 +117,9 @@ def pid_mutation():
 def genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, is_mae=True):
     pid_data = pd.DataFrame()
     for gen in range(GenMax):
-        print('generation # ', gen)
-        print('--------------')
-        print('Kp, Ki, Kd, Cost')
+        # print('generation # ', gen)
+        # print('--------------')
+        # print('Kp, Ki, Kd, Cost')
         # First generation
         if gen == 0:
             K = 100 * random_sample((PopSize, 3))
@@ -129,7 +129,7 @@ def genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, is_mae=True):
             pid = PID(K[i][0], K[i][1], K[i][2], setpoint, period)
             cost = pid.mae_cost(pid.simulation(cycle_num)[0], setpoint) if is_mae else pid.mse_cost(
                 pid.simulation(cycle_num)[0], setpoint)
-            print(K[i][0], K[i][1], K[i][2], cost)
+            # print(K[i][0], K[i][1], K[i][2], cost)
             pid_data_gen = pid_data_gen.append(
                 {'Kp': K[i][0], 'Ki': K[i][1], 'Kd': K[i][2], 'Cost': cost, 'Gen': int(gen)},
                 ignore_index=True)
@@ -154,7 +154,8 @@ def genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, is_mae=True):
             K_prime[PopSize - 1] = pid_mutation()
         K = K_prime
         pid_data.to_csv("simu_setpt_" + str(setpoint) + "_genmax_" + str(GenMax) + "_popsz_" + str(PopSize))
-    return pid_data
+
+    return pid_data, K[0]
 
 
 if __name__ == "__main__":
@@ -164,10 +165,11 @@ if __name__ == "__main__":
     GenMax = 100
     PopSize = 20
     cycle_num = 1000
-
-    pid_data = genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, True)
+    for setpoint in np.linspace(40, 90, 11, dtype='int'):
+        _, best = genalg_simu(GenMax, PopSize, setpoint, period, cycle_num, True)
+        print(setpoint, '  ', best)
     stop = timeit.default_timer()
-    print('Time:' , stop-start)
+    print('Time:', stop - start)
     # plot
     # fig = plt.figure()
     # ax = fig.add_subplot(projection='3d')
