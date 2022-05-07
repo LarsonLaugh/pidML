@@ -33,25 +33,25 @@ folder.
 The LCD is only 16 by 2, so we have to fully exploit the limited screen space and the switch button of the 
 rotary potentiometer.
 
-<img alt="screen0" height="100" src="vault/ui_screen0.jpg" width="280"/>
+<img alt="screen0" height="100" src="vault/ui_screen0.JPG" width="280"/>
 
 This is the main screen to display setting temperature and reading. Press button to go next.
 
-<img alt="screen1" height="100" src="vault/ui_screen1.jpg" width="280"/>
+<img alt="screen1" height="100" src="vault/ui_screen1.JPG" width="280"/>
 
 This is the second screen (`screen1`) to monitor the PID paramters in use and the calculated output value 
 in real time. Press button to go next and roll to the left to go back to `screen0`.
 
-<img alt="screen2" height="100" src="vault/ui_screen2.jpg" width="280"/>
+<img alt="screen2" height="100" src="vault/ui_screen2.JPG" width="280"/>
 
-<img alt="screen3" height="100" src="vault/ui_screen3.jpg" width="280"/>
+<img alt="screen3" height="100" src="vault/ui_screen3.JPG" width="280"/>
 
-<img alt="screen4" height="100" src="vault/ui_screen4.jpg" width="280"/>
+<img alt="screen4" height="100" src="vault/ui_screen4.JPG" width="280"/>
 
 Above three screens (`screen2` to `screen4`) to modify the PID parameters one by one manually. Use the 
 rotary potentiometer. Press button to go next.
 
-<img alt="screen5" height="100" src="vault/ui_screen5.jpg" width="280"/>
+<img alt="screen5" height="100" src="vault/ui_screen5.JPG" width="280"/>
 
 This is the last screen `screen5`. Roll left to adapt `Auto mode` (default setting) and press button to
 accept the manually set PID paramters and go to `screen0`.
